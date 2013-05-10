@@ -1,0 +1,17 @@
+Name: binary-deployer
+Cartridge-Short-Name: BINARYDEPLOY
+Cartridge-Version: 0.1
+Cartridge-Vendor: redhat
+Display-Name: Binary Deployer 0.1
+Description: "Binary Deployments TODO"
+License: "ASL 2.0"
+License-Url: http://www.apache.org/licenses/LICENSE-2.0.txt
+Version: '0.1'
+Source-Url: https://github.com/ncdc/openshift-binary-deployment-solution/archive/master.zip
+Vendor: redhat
+Categories:
+  - ci_builder
+Website: https://github.com/ncdc/openshift-binary-deployment-cartridge
+Provides:
+  - binary-deployer-0.1
+  - binary-deployer

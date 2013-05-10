@@ -1,0 +1,5 @@
+#!/bin/bash -e
+
+source $OPENSHIFT_CARTRIDGE_SDK_BASH
+
+mkdir $OPENSHIFT_DATA_DIR{artifacts,deployments}

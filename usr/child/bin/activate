@@ -1,0 +1,62 @@
+#!/bin/bash -e
+source $OPENSHIFT_CARTRIDGE_SDK_BASH
+
+# args
+# 1 - checksum of artifact to be deployed
+
+checksum=$1
+
+if [ ! -e $OPENSHIFT_DATA_DIR/artifacts/$checksum/$checksum ]; then
+  echo "Artifact $checksum has not been distributed to this gear"
+  exit 1
+fi
+
+repo_dir=$OPENSHIFT_HOMEDIR/app-root/runtime/repo
+
+if [ -L $repo_dir ]; then
+  repo_checksum=`cat $repo_dir/../checksum`
+
+  echo "Comparing '$repo_checksum' to '$checksum'"
+
+  if [ "$repo_checksum" == "$checksum" ]; then
+    echo "Checksum $checksum is the current deployment - skipping activation"
+    exit 0
+  fi
+fi
+
+if ! $OPENSHIFT_BINARYDEPLOY_DIR/usr/child/bin/validate $checksum > /dev/null; then
+  echo "Release failed checksum validation - skipping activation"
+  exit 1
+fi
+
+echo "Stopping gear"
+gear stop
+
+if [ -L $repo_dir ]; then
+  echo "Deleting old repo symlink"
+  rm $repo_dir
+else
+  echo "First time activating on this gear - moving repo to repo.orig"
+  mv $repo_dir $repo_dir.orig
+fi
+
+deployment_id=`date +%Y%m%d%H%M%S`
+
+echo "Exploding artifact"
+if ! $OPENSHIFT_BINARYDEPLOY_DIR/usr/child/bin/explode $deployment_id $checksum; then
+  echo "Unable to explode artifact"
+  exit 1
+fi
+
+deployment_repo_dir=$OPENSHIFT_DATA_DIR/deployments/$deployment_id/repo
+
+echo "Linking $deployment_repo_dir to $repo_dir"
+ln -s $deployment_repo_dir $repo_dir
+
+java_artifacts=`find $deployment_repo_dir -iname \*.war -o -iname \*.ear -o -iname \*.sar | wc -l`
+if [ $java_artifacts -ne 0 ] && [ -e $deployment_repo_dir/deployments ] && [ ! -e $deployment_repo_dir/deployments/ROOT.war ]; then
+  cp $OPENSHIFT_BINARYDEPLOY_DIR/support/ROOT.war $deployment_repo_dir/deployments/ROOT.war
+fi
+
+echo "Calling gear remotedeploy"
+gear remotedeploy
