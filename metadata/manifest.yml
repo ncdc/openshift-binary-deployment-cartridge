@@ -20,3 +20,4 @@ Group-Overrides:
   - components:
     - binary-deployer-0.1
     - web_proxy
+Install-Build-Required: false
