@@ -7,7 +7,7 @@ Description: "Binary Deployments TODO"
 License: "ASL 2.0"
 License-Url: http://www.apache.org/licenses/LICENSE-2.0.txt
 Version: '0.1.1'
-Source-Url: https://github.com/ncdc/openshift-binary-deployment-solution/archive/master.zip
+Source-Url: https://github.com/ncdc/openshift-binary-deployment-cartridge/archive/master.zip
 Vendor: andygoldstein
 Categories:
   - ci_builder
