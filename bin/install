@@ -2,4 +2,7 @@
 
 source $OPENSHIFT_CARTRIDGE_SDK_BASH
 
-mkdir $OPENSHIFT_DATA_DIR{artifacts,deployments}
+#TODO remove
+echo `env | grep OPENSHIFT | sort`
+
+mkdir $OPENSHIFT_DATA_DIR/{artifacts,deployments}
