@@ -11,7 +11,12 @@ Source-Url: https://github.com/ncdc/openshift-binary-deployment-solution/archive
 Vendor: redhat
 Categories:
   - ci_builder
+  - embedded
 Website: https://github.com/ncdc/openshift-binary-deployment-cartridge
 Provides:
   - binary-deployer-0.1
   - binary-deployer
+Group-Overrides:
+  - components:
+    - binary-deployer-0.1
+    - web_proxy
