@@ -23,7 +23,7 @@ raise "Release #{checksum} has not been prepared yet" unless File.exist?(File.jo
 
 
 puts "Validating artifact checksum on head gear"
-`~/app-root/runtime/scripts/validate #{checksum}`
+`#{ENV['OPENSHIFT_BINARYDEPLOY_DIR']}/child/bin/validate #{checksum}`
 raise "Checksum validation failed on head gear" unless $?.success?
 
 successes = []
