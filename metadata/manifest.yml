@@ -1,7 +1,7 @@
 Name: binary-deployer
 Cartridge-Short-Name: BINARYDEPLOY
 Cartridge-Version: 0.1
-Cartridge-Vendor: redhat
+Cartridge-Vendor: Andy Goldstein/Red Hat
 Display-Name: Binary Deployer 0.1.1
 Description: "Binary Deployments TODO"
 License: "ASL 2.0"
