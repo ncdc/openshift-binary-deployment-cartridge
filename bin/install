@@ -3,7 +3,7 @@
 source $OPENSHIFT_CARTRIDGE_SDK_BASH
 
 echo "Creating supporting directories"
-mkdir $OPENSHIFT_DATA_DIR/{artifacts,deployments}
+mkdir -p $OPENSHIFT_DATA_DIR/{artifacts,deployments}
 
 echo "Running bundle"
 /usr/bin/scl enable ruby193 "bundle install --deployment --gemfile=$OPENSHIFT_BINARYDEPLOY_DIR/Gemfile"
