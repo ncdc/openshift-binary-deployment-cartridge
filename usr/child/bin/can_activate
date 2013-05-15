@@ -1,0 +1,17 @@
+#!/bin/bash -e
+
+source $OPENSHIFT_BINARYDEPLOY_DIR/usr/lib/util
+
+# args
+# 1 - checksum of artifact to be deployed
+
+# make sure the artifact has been distributed
+if [ ! -e $OPENSHIFT_BINARYDEPLOY_ARTIFACTS_DIR/$1 ]; then
+  exit 1
+fi
+
+# make sure the artifact's checksum is ok
+`$CHILD_BIN_DIR/validate $1 > /dev/null`
+if [ $? -ne 0 ]; then
+  exit 1
+fi

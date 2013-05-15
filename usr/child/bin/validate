@@ -1,0 +1,17 @@
+#!/bin/bash -e
+
+source $OPENSHIFT_BINARYDEPLOY_DIR/usr/lib/util
+
+# args
+# 1 - checksum of artifact to be deployed
+
+checksum=$1
+
+artifact_dir=$OPENSHIFT_BINARYDEPLOY_ARTIFACTS_DIR/$checksum
+
+calculated_sha1=`sha1sum $artifact_dir/$checksum | cut -f 1 -d ' '`
+
+if [ $checksum != $calculated_sha1 ]; then
+  echo 'Artifact checksum verification failed - exiting'
+  exit 1
+fi

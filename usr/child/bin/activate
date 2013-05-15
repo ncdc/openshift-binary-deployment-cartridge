@@ -1,12 +1,12 @@
 #!/bin/bash -e
-source $OPENSHIFT_CARTRIDGE_SDK_BASH
+source $OPENSHIFT_BINARYDEPLOY_DIR/usr/lib/util
 
 # args
 # 1 - checksum of artifact to be deployed
 
 checksum=$1
 
-if [ ! -e $OPENSHIFT_DATA_DIR/artifacts/$checksum/$checksum ]; then
+if [ ! -e OPENSHIFT_BINARYDEPLOY_ARTIFACTS_DIR/$checksum/$checksum ]; then
   echo "Artifact $checksum has not been distributed to this gear"
   exit 1
 fi
@@ -24,7 +24,7 @@ if [ -L $repo_dir ]; then
   fi
 fi
 
-if ! $OPENSHIFT_BINARYDEPLOY_DIR/usr/child/bin/validate $checksum > /dev/null; then
+if ! $CHILD_BIN_DAR/validate $checksum > /dev/null; then
   echo "Release failed checksum validation - skipping activation"
   exit 1
 fi
@@ -43,12 +43,12 @@ fi
 deployment_id=`date +%Y%m%d%H%M%S`
 
 echo "Exploding artifact"
-if ! $OPENSHIFT_BINARYDEPLOY_DIR/usr/child/bin/explode $deployment_id $checksum; then
+if ! $CHILD_BIN_DAR/explode $deployment_id $checksum; then
   echo "Unable to explode artifact"
   exit 1
 fi
 
-deployment_repo_dir=$OPENSHIFT_DATA_DIR/deployments/$deployment_id/repo
+deployment_repo_dir=$OPENSHIFT_BINARYDEPLOY_DEPLOYMENTS_DIR/$deployment_id/repo
 
 echo "Linking $deployment_repo_dir to $repo_dir"
 ln -s $deployment_repo_dir $repo_dir

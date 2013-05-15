@@ -1,0 +1,30 @@
+#!/bin/bash -e
+
+source $OPENSHIFT_BINARYDEPLOY_DIR/usr/lib/util
+
+if $CHILD_BIN_DIR/can_rollback; then
+  previous_deployment=`ls ~/app-root/runtime/deployments | sort | tail -2 | sed -e '$ d'`
+
+  echo "Stopping gear"
+  gear stop
+
+  current_repo=`readlink $OPENSHIFT_HOMEDIR/app-root/runtime/repo`
+  current_deployment=`dirname $current_repo`
+
+  echo "Deleting current repo symlink"
+  rm $OPENSHIFT_HOMEDIR/app-root/runtime/repo
+
+  echo "Deleting current deployment"
+  rm -rf $current_deployment
+
+  deployment_repo_dir=$OPENSHIFT_BINARYDEPLOY_DEPLOYMENTS_DIR/$previous_deployment/repo
+
+  echo "Linking $deployment_repo_dir to $OPENSHIFT_HOMEDIR/app-root/runtime/repo"
+  ln -s $deployment_repo_dir $OPENSHIFT_HOMEDIR/app-root/runtime/repo
+
+  echo "Calling gear remotedeploy"
+  gear remotedeploy
+else
+  echo "can_rollback returned nonzero exit - unable to rollback"
+  exit 1
+fi

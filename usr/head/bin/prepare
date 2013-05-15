@@ -1,5 +1,5 @@
 #!/bin/bash -e
-source $OPENSHIFT_CARTRIDGE_SDK_BASH
+source $OPENSHIFT_BINARYDEPLOY_DIR/usr/lib/util
 
 if [ ! -x $OPENSHIFT_REPO_DIR.openshift/action_hooks/user_prepare ]; then
   echo "You must provide a user_prepare action hook!"
@@ -27,7 +27,7 @@ artifact_sha1=`echo $artifact_and_sha1 | cut -f 2 -d ' '`
 artifact_name=`basename $tmp_artifact`
 
 # move the artifact to the artifacts dir
-artifact_dir=$OPENSHIFT_DATA_DIR/artifacts/$artifact_sha1
+artifact_dir=$OPENSHIFT_BINARYDEPLOY_ARTIFACTS_DIR/$artifact_sha1
 
 echo "Creating directory $artifact_dir"
 mkdir -p $artifact_dir

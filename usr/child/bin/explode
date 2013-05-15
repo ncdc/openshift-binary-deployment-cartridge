@@ -1,0 +1,23 @@
+#!/bin/bash -e
+
+source $OPENSHIFT_BINARYDEPLOY_DIR/usr/lib/util
+
+# args
+# 1 - deployment id (YYYYmmddHHMMSS)
+# 2 - checksum of artifact to be deployed
+
+deployment_id=$1
+checksum=$2
+
+deployment_dir=$OPENSHIFT_BINARYDEPLOY_DEPLOYMENTS_DIR/$deployment_id
+repo_dir=$deployment_dir/repo
+
+if [ ! -e $repo_dir ]; then
+  mkdir -p $repo_dir
+
+  cd $repo_dir
+
+  tar xf $OPENSHIFT_BINARYDEPLOY_ARTIFACTS_DIR/$checksum/$checksum
+
+  echo $checksum > $deployment_dir/checksum
+fi

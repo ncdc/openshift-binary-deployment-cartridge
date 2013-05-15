@@ -1,0 +1,10 @@
+#!/bin/bash -e
+
+source $OPENSHIFT_BINARYDEPLOY_DIR/usr/lib/util
+
+# make sure there is a previous deployment
+previous_deployment=`ls $OPENSHIFT_BINARYDEPLOY_DEPLOYMENTS_DIR | sort | tail -2 | sed -e '$ d'`
+if [ "x$previous_deployment" == "x" ]; then
+  echo "No previous deployment exists"
+  exit 1
+fi

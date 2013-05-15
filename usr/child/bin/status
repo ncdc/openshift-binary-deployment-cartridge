@@ -1,0 +1,18 @@
+#!/bin/bash -e
+
+source $OPENSHIFT_BINARYDEPLOY_DIR/usr/lib/util
+
+if [ -L $OPENSHIFT_HOMEDIR/app-root/runtime/repo ]; then
+  checksum=`cat $OPENSHIFT_HOMEDIR/app-root/runtime/repo/../checksum`
+  filename=`cat $OPENSHIFT_BINARYDEPLOY_ARTIFACTS_DIR/$checksum/filename`
+
+  valid='OK'
+  `$CHILD_BIN_DIR/validate $checksum`
+  if [ $? -ne 0 ]; then
+    valid='NOT OK'
+  fi
+
+  echo "$filename ($checksum: $valid)"
+else
+  echo 'Unknown; deployment not activated using binary deployment process'
+fi

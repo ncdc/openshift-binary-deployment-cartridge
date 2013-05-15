@@ -1,0 +1,65 @@
+#!/bin/env oo-ruby
+
+require 'optparse'
+require 'ostruct'
+require_relative '../lib/util.rb'
+
+options = OpenStruct.new
+options.dry_run = false
+options.gear_list = nil
+
+opt_parser = OptionParser.new do |opts|
+  opts.on("-c", "--checksum CHECKSUM", "Artifact checksum to rollback") do |checksum|
+    options.checksum = checksum
+  end
+  
+  opts.on("-g", "--gear-list GEARLIST", "Path to file containing a list of gears") do |gear_list|
+    options.gear_list = gear_list
+  end
+  
+  opts.on("-n", "--dry-run", "Dry run - don't perform any changes") do |b|
+    options.dry_run = b
+  end
+end
+
+opt_parser.parse!(ARGV)
+
+raise "--checksum is required" unless options.checksum
+
+if options.gear_list
+  targets = File.readlines(@options.gears).map(&:chomp)
+else
+  targets = read_gear_registry
+end
+
+ok = []
+bad = []
+
+output = parallel(targets) do |ssh_url|
+  ssh_url.gsub!(/^ssh:\/\//, '')
+  uuid = ssh_url.split('@')[0]
+
+  if options.dry_run
+    `ssh #{ssh_url} "#{CHILD_BIN_DIR}/can_rollback #{artifact}"`
+    if $?.success?
+      ok << uuid
+    else
+      bad << uuid
+    end
+  else
+    `ssh #{ssh_url} "#{CHILD_BIN_DIR}/rollback #{artifact} 2>&1"`
+  end
+end
+
+if options.dry_run
+  color "Gears that should rollback successfully:", :bold, :underline
+  ok.each { |g| say g }
+  say "\n"
+  color "Gears that will not rollback successfully:", :bold, :underline
+  bad.each { |g| say g }
+else
+  targets.collect { |t| t.gsub(/^ssh:\/\//, '').split('@')[0] }.each_with_index do |uuid, index|
+    color "Result from #{uuid}:", :bold, :underline
+    output[index].each { |o| say "  #{o}" }
+  end
+end

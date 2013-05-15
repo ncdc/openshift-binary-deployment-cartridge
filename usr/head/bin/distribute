@@ -1,26 +1,15 @@
-#!/usr/bin/env ruby
+#!/bin/env oo-ruby
 
 # args
 # 1 - checksum of the artifact to distribute
 
-def read_gear_registry
-  gears = []
-  File.open(File.join(ENV['OPENSHIFT_HOMEDIR'], 'haproxy-1.4', 'conf', 'gear-registry.db')).each do |line|
-    # eade013180c842af98947e5728e88c1e@10.7.14.215:ruby-1.9;eade013180-andy.ose.rhc.redhat.com
-    if line =~ /([^@]+)@([^:]+):/
-      uuid, host = $~[1..2]
-      gears << [uuid, host]
-    end
-  end
-  gears
-end
+require_relative 'lib/util.rb'
 
 checksum=ARGV.shift
 
 sync_base_dir = "#{ENV['OPENSHIFT_DATA_DIR']}/artifacts"
 
 raise "Release #{checksum} has not been prepared yet" unless File.exist?(File.join(sync_base_dir, checksum))
-
 
 puts "Validating artifact checksum on head gear"
 `#{ENV['OPENSHIFT_BINARYDEPLOY_DIR']}/child/bin/validate #{checksum}`
@@ -32,8 +21,9 @@ failures = []
 gears = read_gear_registry
 puts "# of child gears = #{gears.count}"
 
-output = Parallel.map(gears, :in_threads => 5) do |uuid, host|
+output = Parallel.map(gears, :in_threads => 5) do |ssh_url|
   result = []
+  uuid, host = ssh_url.split('@')
   result << "Distributing to #{uuid}@#{host}"
 
   result << "Creating artifact directory for #{checksum}"

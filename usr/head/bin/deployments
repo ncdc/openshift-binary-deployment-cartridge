@@ -1,0 +1,17 @@
+#!/bin/env oo-ruby
+
+require_relative '../lib/util.rb'
+
+gears = read_gear_registry
+
+output = parallel(gears) do |gear|
+  `ssh #{gear} '$OPENSHIFT_BINARYDEPLOY_DIR/usr/child/bin/deployments'`
+end
+
+gears.each_with_index do |ssh_url, index|
+  gear_id = ssh_url.split('@')[0]
+  color "Gear #{gear_id}", :bold, :underline
+  deployments = output[index].split("\n")
+  deployments.each { |r| say "  #{r}" }
+  say "\n"
+end
