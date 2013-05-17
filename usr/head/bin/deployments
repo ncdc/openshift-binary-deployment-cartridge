@@ -9,7 +9,7 @@ output = parallel(gears) do |gear|
 end
 
 gears.each_with_index do |gear, index|
-  color "Gear #{gear.id}", :bold, :underline
+  say $terminal.color "Gear #{gear.id}", :bold, :underline
   deployments = output[index].split("\n")
   deployments.each { |r| say "  #{r}" }
   say "\n"
