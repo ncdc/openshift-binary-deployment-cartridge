@@ -52,10 +52,10 @@ output = parallel(targets) do |ssh_url|
 end
 
 if options.dry_run
-  color "Gears that should #{action} successfully:", :bold, :underline
+  color "Gears that should activate successfully:", :bold, :underline
   ok.each { |g| say g }
   say "\n"
-  color "Gears that will not #{action} successfully:", :bold, :underline
+  color "Gears that will not activate successfully:", :bold, :underline
   bad.each { |g| say g }
 else
   targets.collect { |t| t.gsub(/^ssh:\/\//, '').split('@')[0] }.each_with_index do |uuid, index|

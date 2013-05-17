@@ -1,9 +1,15 @@
 #!/bin/bash -e
 
-source $OPENSHIFT_CARTRIDGE_SDK_BASH
+source $OPENSHIFT_BINARYDEPLOY_DIR/lib/util
 
 echo "Creating supporting directories"
-mkdir -p $OPENSHIFT_DATA_DIR/{artifacts,deployments}
+mkdir -p $OPENSHIFT_BINARYDEPLOY_ARTIFACTS_DIR
+mkdir -p $OPENSHIFT_BINARYDEPLOY_DEPLOYMENTS_DIR
+mkdir -p $OPENSHIFT_BINARYDEPLOY_GITCLONE_DIR
 
 echo "Running bundle"
 /usr/bin/scl enable ruby193 "bundle install --deployment --gemfile=$OPENSHIFT_BINARYDEPLOY_DIR/Gemfile"
+
+echo "Creating git clone"
+cd $OPENSHIFT_BINARYDEPLOY_GITCLONE_DIR
+git clone $OPENSHIFT_HOMEDIR/git/$OPENSHIFT_APP_NAME.git

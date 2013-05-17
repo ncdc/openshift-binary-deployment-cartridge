@@ -58,5 +58,10 @@ if [ $java_artifacts -ne 0 ] && [ -e $deployment_repo_dir/deployments ] && [ ! -
   cp $OPENSHIFT_BINARYDEPLOY_DIR/support/ROOT.war $deployment_repo_dir/deployments/ROOT.war
 fi
 
+# need to link in user_prepare since that's coming from the git repo and not the artifact
+if [ -e $OPENSHIFT_BINARYDEPLOY_GITCLONE_DIR/.openshift/action_hooks/user_prepare ]; then
+  ln -s $OPENSHIFT_BINARYDEPLOY_GITCLONE_DIR/.openshift/action_hooks/user_prepare $deployment_repo_dir/.openshift/action_hooks/user_prepare
+fi
+
 echo "Calling gear remotedeploy"
 gear remotedeploy

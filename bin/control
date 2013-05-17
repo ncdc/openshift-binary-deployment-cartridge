@@ -1,1 +1,16 @@
 #!/bin/bash -e
+
+source $OPENSHIFT_BINARYDEPLOY_DIR/lib/util
+
+function post-receive() {
+  cd $OPENSHIFT_BINARYDEPLOY_GITCLONE_DIR
+  git pull
+  if [ -e .openshift/action_hooks/user_prepare ]; then
+    cp .openshift/action_hooks/user_prepare $OPENSHIFT_REPO_DIR/.openshift/action_hooks
+  fi
+}
+
+case "$1" in
+  post-receive)      post-receive ;;
+  *)                 exit 0
+esac
