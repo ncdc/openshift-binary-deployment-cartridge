@@ -13,3 +13,7 @@ echo "Running bundle"
 echo "Creating git clone"
 cd $OPENSHIFT_BINARYDEPLOY_GITCLONE_DIR
 git clone $OPENSHIFT_HOMEDIR/git/$OPENSHIFT_APP_NAME.git
+cd $OPENSHIFT_APP_NAME
+if [ -e .openshift/action_hooks/user_prepare ]; then
+  cp .openshift/action_hooks/user_prepare $OPENSHIFT_REPO_DIR/.openshift/action_hooks
+fi
