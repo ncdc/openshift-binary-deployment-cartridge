@@ -1,4 +1,7 @@
-require 'highline'
+ENV['BUNDLE_GEMFILE'] ||= File.expand_path('../../../../Gemfile', __FILE__)
+
+require 'bundler/setup'
+require 'highline/import'
 require 'parallel'
 
 def read_gear_registry
