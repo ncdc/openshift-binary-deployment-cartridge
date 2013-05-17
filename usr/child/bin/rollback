@@ -3,7 +3,7 @@
 source $OPENSHIFT_BINARYDEPLOY_DIR/usr/lib/util
 
 if $CHILD_BIN_DIR/can_rollback; then
-  previous_deployment=`ls ~/app-root/runtime/deployments | sort | tail -2 | sed -e '$ d'`
+  previous_deployment=`ls $OPENSHIFT_DATA_DIR/deployments | sort | tail -2 | sed -e '$ d'`
 
   echo "Stopping gear"
   gear stop
