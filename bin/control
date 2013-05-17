@@ -3,7 +3,7 @@
 source $OPENSHIFT_BINARYDEPLOY_DIR/usr/lib/util
 
 function post-receive() {
-  cd $OPENSHIFT_BINARYDEPLOY_GITCLONE_DIR
+  cd $OPENSHIFT_BINARYDEPLOY_GITCLONE_DIR/$OPENSHIFT_APP_NAME
   git pull
   if [ -e .openshift/action_hooks/user_prepare ]; then
     cp .openshift/action_hooks/user_prepare $OPENSHIFT_REPO_DIR/.openshift/action_hooks
