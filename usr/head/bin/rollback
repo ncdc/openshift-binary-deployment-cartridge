@@ -9,10 +9,6 @@ options.dry_run = false
 options.gear_list = nil
 
 opt_parser = OptionParser.new do |opts|
-  opts.on("-c", "--checksum CHECKSUM", "Artifact checksum to rollback") do |checksum|
-    options.checksum = checksum
-  end
-  
   opts.on("-g", "--gear-list GEARLIST", "Path to file containing a list of gears") do |gear_list|
     options.gear_list = gear_list
   end
@@ -23,8 +19,6 @@ opt_parser = OptionParser.new do |opts|
 end
 
 opt_parser.parse!(ARGV)
-
-raise "--checksum is required" unless options.checksum
 
 if options.gear_list
   targets = File.readlines(options.gear_list).map(&:chomp)
@@ -37,14 +31,14 @@ bad = []
 
 output = parallel(targets) do |gear|
   if options.dry_run
-    gear.run "#{CHILD_BIN_DIR}/can_rollback #{options.checksum}"
+    gear.run "#{CHILD_BIN_DIR}/can_rollback"
     if $?.success?
       ok << gear.id
     else
       bad << gear.id
     end
   else
-    gear.run "#{CHILD_BIN_DIR}/rollback #{options.checksum} 2>&1"
+    gear.run "#{CHILD_BIN_DIR}/rollback 2>&1"
   end
 end
 
@@ -56,7 +50,7 @@ if options.dry_run
   bad.each { |gear_id| say gear_id }
 else
   targets.each_with_index do |gear, index|
-    color "Result from #{gear.id}:", :bold, :underline
+    say $terminal.color "Result from #{gear.id}:", :bold, :underline
     say output[index]
   end
 end

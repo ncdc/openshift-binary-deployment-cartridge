@@ -3,7 +3,7 @@
 source $OPENSHIFT_BINARYDEPLOY_DIR/usr/lib/util
 
 for checksum in `ls $OPENSHIFT_BINARYDEPLOY_ARTIFACTS_DIR`; do
-  if [ -d OPENSHIFT_BINARYDEPLOY_ARTIFACTS_DIR/$checksum ]; then
+  if [ -d $OPENSHIFT_BINARYDEPLOY_ARTIFACTS_DIR/$checksum ]; then
     filename=`cat $OPENSHIFT_BINARYDEPLOY_ARTIFACTS_DIR/$checksum/filename`
     echo "$checksum: $filename"
   fi
