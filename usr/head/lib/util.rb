@@ -1,3 +1,6 @@
+require 'highline'
+require 'parallel'
+
 def read_gear_registry
   gears = []
   File.open(File.join(ENV['OPENSHIFT_HAPROXY_DIR'], 'conf', 'gear-registry.db')).each do |line|
