@@ -22,25 +22,23 @@ gears = read_gear_registry
 say "# of child gears = #{gears.count - 1}"
 
 output = parallel(gears) do |gear|
+  result = []
+
   unless gear.local
-    result = []
     result << "Distributing to #{gear.url}"
 
-    result << "Creating artifact directory for #{checksum}"
-    gear.run 'mkdir -p app-root/runtime/artifacts/#{checksum}'
-
     result << "Syncing artifact #{checksum}"
-    result << `rsync -v --delete-after -az --rsh=ssh "#{sync_base_dir}/#{checksum}/" "#{gear.url}:app-root/runtime/artifacts/#{checksum}/"`
+    result << `rsync -v --delete-after -az --rsh=ssh "#{sync_base_dir}/#{checksum}/" "#{gear.url}:app-root/data/artifacts/#{checksum}/"`
 
     result << "Validating checksum"
-    gear.run 'app-root/runtime/scripts/validate #{checksum}'
+    gear.run "$OPENSHIFT_BINARYDEPLOY_DIR/usr/child/bin/validate #{checksum}"
 
     if $?.success?
       result << "Checksum validated"
-      successes << uuid
+      successes << gear.id
     else
       result << "Checksum validation failed"
-      failures << uuid
+      failures << gear.id
     end
   end
 
@@ -48,9 +46,10 @@ output = parallel(gears) do |gear|
 end
 
 output.each_with_index do |out, index|
+  next if gears[index].local
   uuid = gears[index].id
   say "Result from gear #{uuid}"
-  out.each { |o| say "  #{o}" }
+  output[index].each {|o| say "  #{o}"}
   say ""
 end
 

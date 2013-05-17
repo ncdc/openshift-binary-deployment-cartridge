@@ -24,7 +24,7 @@ class Gear
     if local
       `#{command_line}`
     else
-      `ssh #{url} "#{command_line}"}`
+      `ssh #{url} '#{command_line}'`
     end
   end
 end

@@ -37,14 +37,14 @@ bad = []
 
 output = parallel(targets) do |gear|
   if options.dry_run
-    gear.run "#{CHILD_BIN_DIR}/can_activate #{options.checksum}"
+    gear.run "$OPENSHIFT_BINARYDEPLOY_DIR/usr/child/bin/can_activate #{options.checksum}"
     if $?.success?
       ok << gear.id
     else
       bad << gear.id
     end
   else
-    gear.run "#{CHILD_BIN_DIR}/activate #{options.checksum} 2>&1"
+    gear.run "$OPENSHIFT_BINARYDEPLOY_DIR/usr/child/bin/activate #{options.checksum} 2>&1"
   end
 end
 

@@ -5,7 +5,7 @@ require_relative '../lib/util.rb'
 gears = read_gear_registry
 
 output = parallel(gears) do |gear|
-  gear.run '$OPENSHIFT_BINARYDEPLOY_DIR/usr/child/bin/artifacts'
+  gear.run "$OPENSHIFT_BINARYDEPLOY_DIR/usr/child/bin/artifacts"
 end
 
 gears.each_with_index do |gear, index|
