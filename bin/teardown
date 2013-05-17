@@ -2,7 +2,8 @@
 
 source $OPENSHIFT_BINARYDEPLOY_DIR/usr/lib/util
 
-echo "Removing supporting directories"
-rm -rf $OPENSHIFT_BINARYDEPLOY_ARTIFACTS_DIR \
-       $OPENSHIFT_BINARYDEPLOY_DEPLOYMENTS_DIR \
-       $OPENSHIFT_BINARYDEPLOY_GITCLONE_DIR
+# I'm not sure we want to do this
+#echo "Removing supporting directories"
+#rm -rf $OPENSHIFT_BINARYDEPLOY_ARTIFACTS_DIR \
+#       $OPENSHIFT_BINARYDEPLOY_DEPLOYMENTS_DIR \
+#       $OPENSHIFT_BINARYDEPLOY_GITCLONE_DIR
