@@ -12,34 +12,36 @@ sync_base_dir = "#{ENV['OPENSHIFT_DATA_DIR']}/artifacts"
 raise "Release #{checksum} has not been prepared yet" unless File.exist?(File.join(sync_base_dir, checksum))
 
 say "Validating artifact checksum on head gear"
-`#{ENV['OPENSHIFT_BINARYDEPLOY_DIR']}/child/bin/validate #{checksum}`
+`#{ENV['OPENSHIFT_BINARYDEPLOY_DIR']}/usr/child/bin/validate #{checksum}`
 raise "Checksum validation failed on head gear" unless $?.success?
 
 successes = []
 failures = []
 
 gears = read_gear_registry
-say "# of child gears = #{gears.count}"
+say "# of child gears = #{gears.count - 1}"
 
 output = parallel(gears) do |gear|
-  result = []
-  result << "Distributing to #{gear.url}"
+  unless gear.local
+    result = []
+    result << "Distributing to #{gear.url}"
 
-  result << "Creating artifact directory for #{checksum}"
-  gear.run_if_child 'mkdir -p app-root/runtime/artifacts/#{checksum}'
+    result << "Creating artifact directory for #{checksum}"
+    gear.run 'mkdir -p app-root/runtime/artifacts/#{checksum}'
 
-  result << "Syncing artifact #{checksum}"
-  result << `rsync -v --delete-after -az --rsh=ssh "#{sync_base_dir}/#{checksum}/" "#{gear.url}:app-root/runtime/artifacts/#{checksum}/"`
+    result << "Syncing artifact #{checksum}"
+    result << `rsync -v --delete-after -az --rsh=ssh "#{sync_base_dir}/#{checksum}/" "#{gear.url}:app-root/runtime/artifacts/#{checksum}/"`
 
-  result << "Validating checksum"
-  gear.run_if_child 'app-root/runtime/scripts/validate #{checksum}'
+    result << "Validating checksum"
+    gear.run 'app-root/runtime/scripts/validate #{checksum}'
 
-  if $?.success?
-    result << "Checksum validated"
-    successes << uuid
-  else
-    result << "Checksum validation failed"
-    failures << uuid
+    if $?.success?
+      result << "Checksum validated"
+      successes << uuid
+    else
+      result << "Checksum validation failed"
+      failures << uuid
+    end
   end
 
   result

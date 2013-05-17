@@ -6,7 +6,7 @@ source $OPENSHIFT_BINARYDEPLOY_DIR/usr/lib/util
 
 checksum=$1
 
-if [ ! -e OPENSHIFT_BINARYDEPLOY_ARTIFACTS_DIR/$checksum/$checksum ]; then
+if [ ! -e $OPENSHIFT_BINARYDEPLOY_ARTIFACTS_DIR/$checksum/$checksum ]; then
   echo "Artifact $checksum has not been distributed to this gear"
   exit 1
 fi
@@ -24,7 +24,7 @@ if [ -L $repo_dir ]; then
   fi
 fi
 
-if ! $CHILD_BIN_DAR/validate $checksum > /dev/null; then
+if ! $CHILD_BIN_DIR/validate $checksum > /dev/null; then
   echo "Release failed checksum validation - skipping activation"
   exit 1
 fi
@@ -43,7 +43,7 @@ fi
 deployment_id=`date +%Y%m%d%H%M%S`
 
 echo "Exploding artifact"
-if ! $CHILD_BIN_DAR/explode $deployment_id $checksum; then
+if ! $CHILD_BIN_DIR/explode $deployment_id $checksum; then
   echo "Unable to explode artifact"
   exit 1
 fi

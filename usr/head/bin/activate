@@ -27,7 +27,7 @@ opt_parser.parse!(ARGV)
 raise "--checksum is required" unless options.checksum
 
 if options.gear_list
-  targets = File.readlines(@options.gears).map(&:chomp)
+  targets = File.readlines(options.gear_list).map(&:chomp)
 else
   targets = read_gear_registry
 end
@@ -37,14 +37,14 @@ bad = []
 
 output = parallel(targets) do |gear|
   if options.dry_run
-    gear.run "#{CHILD_BIN_DIR}/can_activate #{artifact}"
+    gear.run "#{CHILD_BIN_DIR}/can_activate #{options.checksum}"
     if $?.success?
       ok << gear.id
     else
       bad << gear.id
     end
   else
-    gear.run "#{CHILD_BIN_DIR}/activate #{artifact} 2>&1"
+    gear.run "#{CHILD_BIN_DIR}/activate #{options.checksum} 2>&1"
   end
 end
 
@@ -57,6 +57,6 @@ if options.dry_run
 else
   targets.each_with_index do |gear, index|
     say $terminal.color "Result from #{gear.id}:", :bold, :underline
-    output[index].each { |o| say "  #{o}" }
+    say output[index]
   end
 end

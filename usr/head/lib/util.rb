@@ -1,6 +1,13 @@
+# need this so the head/bin scripts have the bundler environment
 ENV['BUNDLE_GEMFILE'] ||= File.expand_path('../../../../Gemfile', __FILE__)
 
 require 'bundler/setup'
+
+# if we leave these set, calls to 'gear stop|start' will not be able to find system gems
+ENV['BUNDLE_GEMFILE'] = nil
+ENV['GEM_HOME'] = nil
+ENV['GEM_PATH'] = nil
+
 require 'highline/import'
 require 'parallel'
 
@@ -19,10 +26,6 @@ class Gear
     else
       `ssh #{url} "#{command_line}"}`
     end
-  end
-  
-  def run_if_child(command_line)
-    run(command_line) unless local
   end
 end
 
