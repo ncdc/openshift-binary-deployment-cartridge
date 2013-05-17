@@ -7,15 +7,15 @@ gears = read_gear_registry
 say "Application #{ENV['OPENSHIFT_APP_NAME']} has #{gears.count} gears:"
 
 output = parallel(gears) do |gear|
-  version = `ssh #{gear} '$OPENSHIFT_BINARYDEPLOY_DIR/usr/child/bin/status 2>&1'`
+  version = gear.run '$OPENSHIFT_BINARYDEPLOY_DIR/usr/child/bin/status 2>&1'
   version = "Error checking version: #{output}" unless $?.success?
+  version
 end
 
-gears.each_with_index do |ssh_url, index|
-  gear_id = ssh_url.split('@')[0]
-  say $terminal.color "Gear #{gear_id}", :bold, :underline
+gears.each_with_index do |gear, index|
+  say $terminal.color "Gear #{gear.id}", :bold, :underline
   result = output[index]
-  say "  SSH URL: #{ssh_url}"
+  say "  SSH URL: #{gear.url}"
   say "  Deployed version: #{result}"
   say "\n"
 end

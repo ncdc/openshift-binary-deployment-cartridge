@@ -35,31 +35,28 @@ end
 ok = []
 bad = []
 
-output = parallel(targets) do |ssh_url|
-  ssh_url.gsub!(/^ssh:\/\//, '')
-  uuid = ssh_url.split('@')[0]
-
+output = parallel(targets) do |gear|
   if options.dry_run
-    `ssh #{ssh_url} "#{CHILD_BIN_DIR}/can_rollback #{artifact}"`
+    gear.run "#{CHILD_BIN_DIR}/can_rollback #{artifact}"
     if $?.success?
-      ok << uuid
+      ok << gear.id
     else
-      bad << uuid
+      bad << gear.id
     end
   else
-    `ssh #{ssh_url} "#{CHILD_BIN_DIR}/rollback #{artifact} 2>&1"`
+    gear.run "#{CHILD_BIN_DIR}/rollback #{artifact} 2>&1"
   end
 end
 
 if options.dry_run
-  color "Gears that should rollback successfully:", :bold, :underline
-  ok.each { |g| say g }
+  say $terminal.color "Gears that should rollback successfully:", :bold, :underline
+  ok.each { |gear_id| say gear_id }
   say "\n"
-  color "Gears that will not rollback successfully:", :bold, :underline
-  bad.each { |g| say g }
+  say $terminal.color "Gears that will not rollback successfully:", :bold, :underline
+  bad.each { |gear_id| say gear_id }
 else
-  targets.collect { |t| t.gsub(/^ssh:\/\//, '').split('@')[0] }.each_with_index do |uuid, index|
-    color "Result from #{uuid}:", :bold, :underline
+  targets.each_with_index do |gear, index|
+    color "Result from #{gear.id}:", :bold, :underline
     output[index].each { |o| say "  #{o}" }
   end
 end

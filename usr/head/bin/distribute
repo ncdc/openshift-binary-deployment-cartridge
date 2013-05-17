@@ -3,7 +3,7 @@
 # args
 # 1 - checksum of the artifact to distribute
 
-require_relative 'lib/util.rb'
+require_relative '../lib/util.rb'
 
 checksum=ARGV.shift
 
@@ -11,7 +11,7 @@ sync_base_dir = "#{ENV['OPENSHIFT_DATA_DIR']}/artifacts"
 
 raise "Release #{checksum} has not been prepared yet" unless File.exist?(File.join(sync_base_dir, checksum))
 
-puts "Validating artifact checksum on head gear"
+say "Validating artifact checksum on head gear"
 `#{ENV['OPENSHIFT_BINARYDEPLOY_DIR']}/child/bin/validate #{checksum}`
 raise "Checksum validation failed on head gear" unless $?.success?
 
@@ -19,21 +19,20 @@ successes = []
 failures = []
 
 gears = read_gear_registry
-puts "# of child gears = #{gears.count}"
+say "# of child gears = #{gears.count}"
 
-output = Parallel.map(gears, :in_threads => 5) do |ssh_url|
+output = parallel(gears) do |gear|
   result = []
-  uuid, host = ssh_url.split('@')
-  result << "Distributing to #{uuid}@#{host}"
+  result << "Distributing to #{gear.url}"
 
   result << "Creating artifact directory for #{checksum}"
-  `ssh #{uuid}@#{host} mkdir -p app-root/runtime/artifacts/#{checksum}`
+  gear.run_if_child 'mkdir -p app-root/runtime/artifacts/#{checksum}'
 
   result << "Syncing artifact #{checksum}"
-  result << `rsync -v --delete-after -az --rsh=ssh "#{sync_base_dir}/#{checksum}/" "#{uuid}@#{host}:app-root/runtime/artifacts/#{checksum}/"`
+  result << `rsync -v --delete-after -az --rsh=ssh "#{sync_base_dir}/#{checksum}/" "#{gear.url}:app-root/runtime/artifacts/#{checksum}/"`
 
   result << "Validating checksum"
-  `ssh #{uuid}@#{host} app-root/runtime/scripts/validate #{checksum}`
+  gear.run_if_child 'app-root/runtime/scripts/validate #{checksum}'
 
   if $?.success?
     result << "Checksum validated"
@@ -47,16 +46,16 @@ output = Parallel.map(gears, :in_threads => 5) do |ssh_url|
 end
 
 output.each_with_index do |out, index|
-  uuid = gears[index][0]
-  puts "Result from gear #{uuid}"
-  out.each { |o| puts "  #{o}" }
-  puts ""
+  uuid = gears[index].id
+  say "Result from gear #{uuid}"
+  out.each { |o| say "  #{o}" }
+  say ""
 end
 
-puts "\nSuccessful distributions: #{successes.count}"
-successes.each { |uuid| puts uuid }
+say "\nSuccessful distributions: #{successes.count}"
+successes.each { |uuid| say uuid }
 
-puts ""
+say ""
 
-puts "Failed distributions: #{failures.count}"
-failures.each { |uuid| puts uuid }
+say "Failed distributions: #{failures.count}"
+failures.each { |uuid| say uuid }
