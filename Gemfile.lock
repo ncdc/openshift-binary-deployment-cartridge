@@ -3,6 +3,7 @@ GEM
   specs:
     highline (1.6.19)
     parallel (0.6.4)
+    rubygems-bundler (1.1.1)
 
 PLATFORMS
   ruby
@@ -10,3 +11,4 @@ PLATFORMS
 DEPENDENCIES
   highline
   parallel
+  rubygems-bundler
