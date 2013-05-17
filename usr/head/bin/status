@@ -4,7 +4,7 @@ require_relative '../lib/util.rb'
 
 gears = read_gear_registry
 
-say "Application #{ENV['OPENSHIFT_APP_NAME']} has #{gears.count} gears:"
+puts "Application #{ENV['OPENSHIFT_APP_NAME']} has #{gears.count} gears:"
 
 output = parallel(gears) do |gear|
   version = `ssh #{gear} '$OPENSHIFT_BINARYDEPLOY_DIR/usr/child/bin/status 2>&1'`
@@ -15,7 +15,7 @@ gears.each_with_index do |ssh_url, index|
   gear_id = ssh_url.split('@')[0]
   color "Gear #{gear_id}", :bold, :underline
   result = output[index]
-  say "  SSH URL: #{ssh_url}"
-  say "  Deployed version: #{result}"
-  say "\n"
+  puts "  SSH URL: #{ssh_url}"
+  puts "  Deployed version: #{result}"
+  puts "\n"
 end
